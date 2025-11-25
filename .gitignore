@@ -42,6 +42,7 @@ state/
 
 # Config (don't commit actual configs with credentials)
 config.yaml
+config.testing.yaml
 
 # Documentation with secrets
 SUCCESS_SUMMARY.md
