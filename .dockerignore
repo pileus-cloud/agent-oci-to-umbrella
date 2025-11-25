@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+
+# State
+state/
+*.json
+
+# Config with credentials
+config.yaml
+config.testing.yaml
+config.*.yaml
+
+# Documentation
+*.md
+!README.md
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Distribution packages
+*.tar.gz
+*.whl
+*.sha256
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PID files
+*.pid
+
+# Other
+test-upload.txt
+SUCCESS_SUMMARY.md

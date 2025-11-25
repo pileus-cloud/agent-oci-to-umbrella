@@ -57,10 +57,11 @@ The following Python packages are required:
 
 ## Installation
 
-There are two installation methods available:
+There are three installation methods available:
 
 - **Method A:** Automated Installation (Recommended for Linux servers)
 - **Method B:** Manual Installation (For development or custom setups)
+- **Method C:** Docker Installation (Recommended for containerized deployments)
 
 ### Method A: Automated Installation (Linux Servers) ⭐ RECOMMENDED
 
@@ -204,6 +205,174 @@ agent-oci-to-umbrella --help
 ```
 
 **Expected Output:** You should see the help message with available commands (start, stop, run, test, sync, status).
+
+---
+
+### Method C: Docker Installation 🐳 CONTAINERIZED
+
+Use this method to run the agent in a Docker container. Perfect for containerized environments, Kubernetes, or isolated deployments.
+
+#### Prerequisites
+
+- Docker Engine 20.10+ installed
+- Docker Compose (V1 or V2)
+- 512 MB RAM minimum
+- Volume mounts for credentials
+
+#### Step 1: Clone or Download the Project
+
+```bash
+# Clone from GitHub
+git clone https://github.com/pileus-cloud/agent-oci-to-umbrella.git
+cd agent-oci-to-umbrella
+
+# Or download and extract
+wget https://github.com/pileus-cloud/agent-oci-to-umbrella/archive/main.zip
+unzip main.zip
+cd agent-oci-to-umbrella-main
+```
+
+#### Step 2: Run Docker Setup Script
+
+```bash
+./docker-setup.sh
+```
+
+**What the setup script does:**
+- ✅ Checks Docker and Docker Compose are installed
+- ✅ Creates required directories (config/, logs/, state/)
+- ✅ Copies configuration template
+- ✅ Checks for OCI and AWS credentials
+- ✅ Builds the Docker image
+
+#### Step 3: Configure the Agent
+
+```bash
+# Edit configuration
+nano config/config.yaml
+```
+
+**Important:** Update paths for Docker volumes:
+
+```yaml
+logging:
+  file: "/logs/agent.log"
+
+state:
+  file: "/state/state.json"
+```
+
+#### Step 4: Set Up Credentials
+
+Ensure your credentials are in place:
+
+```bash
+# OCI credentials
+ls -la ~/.oci/config
+ls -la ~/.oci/oci_api_key.pem
+
+# AWS credentials
+ls -la ~/.aws/credentials
+```
+
+The Docker container will mount these directories as read-only volumes.
+
+#### Step 5: Test Configuration
+
+```bash
+docker compose run --rm agent-oci-to-umbrella test --config /config/config.yaml
+```
+
+**Expected Output:**
+
+```
+✓ OCI connectivity: OK
+✓ S3 connectivity: OK
+✓ All tests passed!
+```
+
+#### Step 6: Run the Agent
+
+**One-time sync:**
+
+```bash
+docker compose run --rm agent-oci-to-umbrella sync --config /config/config.yaml
+```
+
+**Start in daemon mode (runs continuously):**
+
+```bash
+docker compose up -d
+```
+
+**View logs:**
+
+```bash
+docker compose logs -f
+```
+
+**Check status:**
+
+```bash
+docker compose ps
+```
+
+**Stop the agent:**
+
+```bash
+docker compose down
+```
+
+### Docker Commands Reference
+
+| Task | Command |
+|------|---------|
+| Build image | `docker compose build` |
+| Test config | `docker compose run --rm agent-oci-to-umbrella test --config /config/config.yaml` |
+| One-time sync | `docker compose run --rm agent-oci-to-umbrella sync --config /config/config.yaml` |
+| Force sync | `docker compose run --rm agent-oci-to-umbrella sync --config /config/config.yaml --force` |
+| Start daemon | `docker compose up -d` |
+| View logs | `docker compose logs -f` |
+| Check status | `docker compose ps` |
+| Stop daemon | `docker compose down` |
+| Restart | `docker compose restart` |
+| Rebuild | `docker compose build --no-cache` |
+
+### Docker Volume Mounts
+
+The Docker container uses the following volume mounts:
+
+| Host Path | Container Path | Purpose | Mode |
+|-----------|----------------|---------|------|
+| `./config` | `/config` | Configuration files | Read-only |
+| `./logs` | `/logs` | Agent logs | Read-write |
+| `./state` | `/state` | State tracking | Read-write |
+| `~/.oci` | `/root/.oci` | OCI credentials | Read-only |
+| `~/.aws` | `/root/.aws` | AWS credentials | Read-only |
+
+### Docker Best Practices
+
+**Resource Limits:**
+
+The default `docker-compose.yml` includes resource limits:
+- CPU: 1.0 max, 0.25 reserved
+- Memory: 512 MB max, 128 MB reserved
+
+**Logging:**
+
+Logs are configured with rotation:
+- Max size: 10 MB per file
+- Max files: 3 files retained
+
+**Health Check:**
+
+The container includes a health check that runs every 60 seconds to ensure the agent is responsive.
+
+**Security:**
+
+- Credentials are mounted as read-only volumes
+- Container runs as root (needed for OCI/AWS SDKs)
+- No exposed ports (agent doesn't listen on any ports)
 
 ---
 

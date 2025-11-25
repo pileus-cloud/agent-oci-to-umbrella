@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  agent-oci-to-umbrella:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agent-oci-to-umbrella:latest
+    container_name: agent-oci-to-umbrella
+    restart: unless-stopped
+
+    # Volume mounts for persistent data and credentials
+    volumes:
+      # Configuration
+      - ./config:/config:ro
+
+      # Logs and state (persistent)
+      - ./logs:/logs
+      - ./state:/state
+
+      # OCI credentials (read-only)
+      - ~/.oci:/root/.oci:ro
+
+      # AWS credentials (read-only)
+      - ~/.aws:/root/.aws:ro
+
+    # Environment variables (optional overrides)
+    environment:
+      - AGENT_CONFIG=/config/config.yaml
+
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "agent-oci-to-umbrella", "status"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
