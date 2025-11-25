@@ -285,29 +285,129 @@
 
         <h2 id="installation">3. Installation</h2>
 
-        <h3><span class="step-number">1</span> Clone or Download the Project</h3>
+        <p>There are two installation methods available:</p>
+        <ul>
+            <li><strong>Method A:</strong> Automated Installation (Recommended for Linux servers)</li>
+            <li><strong>Method B:</strong> Manual Installation (For development or custom setups)</li>
+        </ul>
+
+        <h3>Method A: Automated Installation (Linux Servers) <span class="badge badge-success">RECOMMENDED</span></h3>
+
+        <p>Use this method to deploy the agent on production Linux servers. The deployment package includes an automated installer that sets up everything for you.</p>
+
+        <h4><span class="step-number">1</span> Download Deployment Package</h4>
+        <pre><code># Download from GitHub releases or build from source
+wget https://github.com/pileus-cloud/oracle-focus-agent/releases/download/v1.0.0/oracle-focus-agent-1.0.0.tar.gz
+
+# Or build the package yourself
+./package.sh</code></pre>
+
+        <div class="info-box">
+            <strong>Package Contents:</strong>
+            <ul style="margin-top: 10px;">
+                <li>Python wheel package (ready to install)</li>
+                <li>Systemd service file</li>
+                <li>Automated installation script</li>
+                <li>Configuration template</li>
+                <li>Complete documentation</li>
+            </ul>
+        </div>
+
+        <h4><span class="step-number">2</span> Transfer to Target Server</h4>
+        <pre><code># Copy to your Linux server
+scp oracle-focus-agent-1.0.0.tar.gz user@server:/tmp/
+
+# SSH to the server
+ssh user@server</code></pre>
+
+        <h4><span class="step-number">3</span> Extract Package</h4>
+        <pre><code>cd /tmp
+tar -xzf oracle-focus-agent-1.0.0.tar.gz
+cd oracle-focus-agent-1.0.0</code></pre>
+
+        <h4><span class="step-number">4</span> Run Automated Installer</h4>
+        <pre><code>sudo ./install.sh</code></pre>
+
+        <div class="success-box">
+            <strong>What the installer does:</strong>
+            <ul style="margin-top: 10px;">
+                <li>✅ Checks Python 3.8+ requirement</li>
+                <li>✅ Installs pip3 if needed (Ubuntu, RHEL, CentOS)</li>
+                <li>✅ Creates dedicated service user (<code>oracle-agent</code>)</li>
+                <li>✅ Creates directories: <code>/opt</code>, <code>/etc</code>, <code>/var/log</code>, <code>/var/lib</code></li>
+                <li>✅ Installs Python package and dependencies</li>
+                <li>✅ Copies configuration template to <code>/etc/oracle-focus-agent/config.yaml</code></li>
+                <li>✅ Installs systemd service</li>
+                <li>✅ Tests the installation</li>
+            </ul>
+        </div>
+
+        <h4><span class="step-number">5</span> Configure the Agent</h4>
+        <p>After installation completes, follow the on-screen instructions to configure:</p>
+        <pre><code># Edit main configuration
+sudo nano /etc/oracle-focus-agent/config.yaml
+
+# Setup OCI credentials
+sudo mkdir -p /root/.oci
+sudo nano /root/.oci/config
+# Copy your OCI private key
+sudo cp /path/to/key.pem /root/.oci/
+sudo chmod 600 /root/.oci/oci_api_key.pem
+
+# Setup AWS credentials
+sudo mkdir -p /root/.aws
+sudo nano /root/.aws/credentials</code></pre>
+
+        <h4><span class="step-number">6</span> Test and Start</h4>
+        <pre><code># Test configuration
+sudo oracle-focus-agent test --config /etc/oracle-focus-agent/config.yaml
+
+# Enable auto-start on boot
+sudo systemctl enable oracle-focus-agent
+
+# Start the service
+sudo systemctl start oracle-focus-agent
+
+# Check status
+sudo systemctl status oracle-focus-agent</code></pre>
+
+        <div class="success-box">
+            <strong>Installation Complete!</strong> The agent is now running as a systemd service and will automatically start on boot.
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+        <h3>Method B: Manual Installation (Development/Custom Setup)</h3>
+
+        <p>Use this method for development environments or if you want more control over the installation process.</p>
+
+        <h4><span class="step-number">1</span> Clone or Download the Project</h4>
         <pre><code># If using git
-git clone https://github.com/yourorg/oracle-focus-agent.git
+git clone https://github.com/pileus-cloud/oracle-focus-agent.git
 cd oracle-focus-agent
 
 # Or download and extract the ZIP file
 unzip oracle-focus-agent.zip
 cd oracle-focus-agent</code></pre>
 
-        <h3><span class="step-number">2</span> Install Python Dependencies</h3>
-        <pre><code>pip install boto3 oci PyYAML</code></pre>
+        <h4><span class="step-number">2</span> Install Python Dependencies</h4>
+        <pre><code>pip3 install boto3 oci PyYAML</code></pre>
 
         <div class="info-box">
             <strong>Tip:</strong> Consider using a virtual environment to isolate dependencies:
-            <pre style="margin-top: 10px;"><code>python -m venv venv
+            <pre style="margin-top: 10px;"><code>python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install boto3 oci PyYAML</code></pre>
         </div>
 
-        <h3><span class="step-number">3</span> Install the Agent</h3>
-        <pre><code>pip install -e .</code></pre>
+        <h4><span class="step-number">3</span> Install the Agent</h4>
+        <pre><code># Development mode (editable install)
+pip3 install -e .
 
-        <h3><span class="step-number">4</span> Verify Installation</h3>
+# Or install from wheel
+pip3 install dist/oracle_focus_agent-1.0.0-py3-none-any.whl</code></pre>
+
+        <h4><span class="step-number">4</span> Verify Installation</h4>
         <pre><code>oracle-focus-agent --help</code></pre>
 
         <div class="success-box">
