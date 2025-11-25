@@ -1,26 +1,26 @@
 [Unit]
-Description=Oracle FOCUS to Umbrella BYOD Transfer Agent
+Description=OCI to Umbrella BYOD Transfer Agent
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-User=oracle-agent
-Group=oracle-agent
-WorkingDirectory=/opt/oracle-focus-agent
-ExecStart=/usr/local/bin/oracle-focus-agent run --config /etc/oracle-focus-agent/config.yaml
+User=oci-umbrella-agent
+Group=oci-umbrella-agent
+WorkingDirectory=/opt/agent-oci-to-umbrella
+ExecStart=/usr/local/bin/agent-oci-to-umbrella run --config /etc/agent-oci-to-umbrella/config.yaml
 Restart=on-failure
 RestartSec=30
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=oracle-focus-agent
+SyslogIdentifier=agent-oci-to-umbrella
 
 # Security hardening
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/opt/oracle-focus-agent/logs /opt/oracle-focus-agent/state
+ReadWritePaths=/opt/agent-oci-to-umbrella/logs /opt/agent-oci-to-umbrella/state
 
 # Environment
 Environment="PATH=/usr/local/bin:/usr/bin:/bin"

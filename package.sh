@@ -2,7 +2,7 @@
 # Package creation script for Oracle FOCUS Agent
 
 VERSION="1.0.0"
-PACKAGE_NAME="oracle-focus-agent-${VERSION}"
+PACKAGE_NAME="agent-oci-to-umbrella-${VERSION}"
 PACKAGE_DIR="${PACKAGE_NAME}"
 
 echo "Creating deployment package: ${PACKAGE_NAME}"

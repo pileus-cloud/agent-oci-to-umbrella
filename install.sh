@@ -4,12 +4,12 @@ set -e
 # Oracle FOCUS Agent Installation Script
 # For Linux systems (Ubuntu, RHEL, CentOS, etc.)
 
-AGENT_USER="oracle-agent"
-AGENT_GROUP="oracle-agent"
-INSTALL_DIR="/opt/oracle-focus-agent"
-CONFIG_DIR="/etc/oracle-focus-agent"
-LOG_DIR="/var/log/oracle-focus-agent"
-STATE_DIR="/var/lib/oracle-focus-agent"
+AGENT_USER="oci-umbrella-agent"
+AGENT_GROUP="oci-umbrella-agent"
+INSTALL_DIR="/opt/agent-oci-to-umbrella"
+CONFIG_DIR="/etc/agent-oci-to-umbrella"
+LOG_DIR="/var/log/agent-oci-to-umbrella"
+STATE_DIR="/var/lib/agent-oci-to-umbrella"
 
 # Colors for output
 RED='\033[0;31m'
@@ -144,13 +144,13 @@ echo ""
 
 # Install systemd service
 echo "Installing systemd service..."
-if [ -f "systemd/oracle-focus-agent.service" ]; then
+if [ -f "systemd/agent-oci-to-umbrella.service" ]; then
     # Update service file with actual paths
-    sed -e "s|/opt/oracle-focus-agent|$INSTALL_DIR|g" \
-        -e "s|/etc/oracle-focus-agent/config.yaml|$CONFIG_DIR/config.yaml|g" \
-        systemd/oracle-focus-agent.service > /etc/systemd/system/oracle-focus-agent.service
+    sed -e "s|/opt/agent-oci-to-umbrella|$INSTALL_DIR|g" \
+        -e "s|/etc/agent-oci-to-umbrella/config.yaml|$CONFIG_DIR/config.yaml|g" \
+        systemd/agent-oci-to-umbrella.service > /etc/systemd/system/agent-oci-to-umbrella.service
 
-    chmod 644 /etc/systemd/system/oracle-focus-agent.service
+    chmod 644 /etc/systemd/system/agent-oci-to-umbrella.service
     systemctl daemon-reload
     echo -e "${GREEN}Systemd service installed${NC}"
 else
@@ -160,12 +160,12 @@ echo ""
 
 # Test installation
 echo "Testing installation..."
-if command -v oracle-focus-agent &> /dev/null; then
-    echo -e "${GREEN}oracle-focus-agent command is available${NC}"
-    oracle-focus-agent --help > /dev/null 2>&1
+if command -v agent-oci-to-umbrella &> /dev/null; then
+    echo -e "${GREEN}agent-oci-to-umbrella command is available${NC}"
+    agent-oci-to-umbrella --help > /dev/null 2>&1
     echo -e "${GREEN}Installation test passed${NC}"
 else
-    echo -e "${RED}Error: oracle-focus-agent command not found${NC}"
+    echo -e "${RED}Error: agent-oci-to-umbrella command not found${NC}"
     exit 1
 fi
 echo ""
@@ -193,17 +193,17 @@ echo "   state:"
 echo "     file: \"$STATE_DIR/state.json\""
 echo ""
 echo "5. Test configuration:"
-echo "   sudo oracle-focus-agent test --config $CONFIG_DIR/config.yaml"
+echo "   sudo agent-oci-to-umbrella test --config $CONFIG_DIR/config.yaml"
 echo ""
 echo "6. Enable and start service:"
-echo "   sudo systemctl enable oracle-focus-agent"
-echo "   sudo systemctl start oracle-focus-agent"
+echo "   sudo systemctl enable agent-oci-to-umbrella"
+echo "   sudo systemctl start agent-oci-to-umbrella"
 echo ""
 echo "7. Check service status:"
-echo "   sudo systemctl status oracle-focus-agent"
+echo "   sudo systemctl status agent-oci-to-umbrella"
 echo ""
 echo "8. View logs:"
-echo "   sudo journalctl -u oracle-focus-agent -f"
+echo "   sudo journalctl -u agent-oci-to-umbrella -f"
 echo "   tail -f $LOG_DIR/agent.log"
 echo ""
 echo "=================================================="

@@ -4,13 +4,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="oracle-focus-agent",
+    name="agent-oci-to-umbrella",
     version="1.0.0",
-    description="Oracle FOCUS to Umbrella BYOD Transfer Agent",
+    description="OCI to Umbrella BYOD Transfer Agent",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="David O",
-    url="https://github.com/pileus-cloud/oracle-focus-agent",
+    url="https://github.com/pileus-cloud/agent-oci-to-umbrella",
     packages=find_packages(),
     install_requires=[
         "oci>=2.100.0",
@@ -19,7 +19,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "oracle-focus-agent=oracle_focus_agent.cli:main",
+            "agent-oci-to-umbrella=agent_oci_to_umbrella.cli:main",
         ],
     },
     python_requires=">=3.8",

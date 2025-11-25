@@ -1,4 +1,4 @@
-# Oracle FOCUS to Umbrella BYOD Transfer Agent
+# OCI to Umbrella BYOD Transfer Agent
 
 Complete Installation and Configuration Guide
 
@@ -20,7 +20,7 @@ Complete Installation and Configuration Guide
 
 ## Overview
 
-The Oracle FOCUS to Umbrella BYOD Transfer Agent is an automated daemon that continuously monitors your Oracle Cloud Infrastructure (OCI) Object Storage for FOCUS cost reports and transfers them to your Umbrella BYOD S3 bucket.
+The OCI to Umbrella BYOD Transfer Agent is an automated daemon that continuously monitors your Oracle Cloud Infrastructure (OCI) Object Storage for FOCUS cost reports and transfers them to your Umbrella BYOD S3 bucket.
 
 **What it does:**
 - Polls OCI Object Storage every 10 minutes for new FOCUS reports
@@ -70,7 +70,7 @@ Use this method to deploy the agent on production Linux servers. The deployment 
 
 ```bash
 # Download from GitHub releases or build from source
-wget https://github.com/pileus-cloud/oracle-focus-agent/releases/download/v1.0.0/oracle-focus-agent-1.0.0.tar.gz
+wget https://github.com/pileus-cloud/agent-oci-to-umbrella/releases/download/v1.0.0/agent-oci-to-umbrella-1.0.0.tar.gz
 
 # Or build the package yourself
 ./package.sh
@@ -87,7 +87,7 @@ wget https://github.com/pileus-cloud/oracle-focus-agent/releases/download/v1.0.0
 
 ```bash
 # Copy to your Linux server
-scp oracle-focus-agent-1.0.0.tar.gz user@server:/tmp/
+scp agent-oci-to-umbrella-1.0.0.tar.gz user@server:/tmp/
 
 # SSH to the server
 ssh user@server
@@ -97,8 +97,8 @@ ssh user@server
 
 ```bash
 cd /tmp
-tar -xzf oracle-focus-agent-1.0.0.tar.gz
-cd oracle-focus-agent-1.0.0
+tar -xzf agent-oci-to-umbrella-1.0.0.tar.gz
+cd agent-oci-to-umbrella-1.0.0
 ```
 
 #### Step 4: Run Automated Installer
@@ -110,10 +110,10 @@ sudo ./install.sh
 **What the installer does:**
 - ✅ Checks Python 3.8+ requirement
 - ✅ Installs pip3 if needed (Ubuntu, RHEL, CentOS)
-- ✅ Creates dedicated service user (`oracle-agent`)
+- ✅ Creates dedicated service user (`oci-umbrella-agent`)
 - ✅ Creates directories: `/opt`, `/etc`, `/var/log`, `/var/lib`
 - ✅ Installs Python package and dependencies
-- ✅ Copies configuration template to `/etc/oracle-focus-agent/config.yaml`
+- ✅ Copies configuration template to `/etc/agent-oci-to-umbrella/config.yaml`
 - ✅ Installs systemd service
 - ✅ Tests the installation
 
@@ -123,7 +123,7 @@ After installation completes, follow the on-screen instructions to configure:
 
 ```bash
 # Edit main configuration
-sudo nano /etc/oracle-focus-agent/config.yaml
+sudo nano /etc/agent-oci-to-umbrella/config.yaml
 
 # Setup OCI credentials
 sudo mkdir -p /root/.oci
@@ -141,16 +141,16 @@ sudo nano /root/.aws/credentials
 
 ```bash
 # Test configuration
-sudo oracle-focus-agent test --config /etc/oracle-focus-agent/config.yaml
+sudo agent-oci-to-umbrella test --config /etc/agent-oci-to-umbrella/config.yaml
 
 # Enable auto-start on boot
-sudo systemctl enable oracle-focus-agent
+sudo systemctl enable agent-oci-to-umbrella
 
 # Start the service
-sudo systemctl start oracle-focus-agent
+sudo systemctl start agent-oci-to-umbrella
 
 # Check status
-sudo systemctl status oracle-focus-agent
+sudo systemctl status agent-oci-to-umbrella
 ```
 
 **Installation Complete!** The agent is now running as a systemd service and will automatically start on boot.
@@ -165,12 +165,12 @@ Use this method for development environments or if you want more control over th
 
 ```bash
 # If using git
-git clone https://github.com/pileus-cloud/oracle-focus-agent.git
-cd oracle-focus-agent
+git clone https://github.com/pileus-cloud/agent-oci-to-umbrella.git
+cd agent-oci-to-umbrella
 
 # Or download and extract the ZIP file
-unzip oracle-focus-agent.zip
-cd oracle-focus-agent
+unzip agent-oci-to-umbrella.zip
+cd agent-oci-to-umbrella
 ```
 
 #### Step 2: Install Python Dependencies
@@ -200,7 +200,7 @@ pip3 install dist/oracle_focus_agent-1.0.0-py3-none-any.whl
 #### Step 4: Verify Installation
 
 ```bash
-oracle-focus-agent --help
+agent-oci-to-umbrella --help
 ```
 
 **Expected Output:** You should see the help message with available commands (start, stop, run, test, sync, status).
@@ -348,7 +348,7 @@ agent:
 ### Step 1: Test Configuration and Connectivity
 
 ```bash
-oracle-focus-agent test --config config.yaml
+agent-oci-to-umbrella test --config config.yaml
 ```
 
 **Expected Output:**
@@ -374,7 +374,7 @@ Configuration Test
 Run a one-time sync to verify file transfers work:
 
 ```bash
-oracle-focus-agent sync --config config.yaml
+agent-oci-to-umbrella sync --config config.yaml
 ```
 
 **Expected Output:**
@@ -408,7 +408,7 @@ Sync operation complete
 Run sync again to verify files are skipped:
 
 ```bash
-oracle-focus-agent sync --config config.yaml
+agent-oci-to-umbrella sync --config config.yaml
 ```
 
 **Expected Output:**
@@ -429,7 +429,7 @@ Interactive mode runs the agent in the foreground, making it perfect for testing
 ### Start Interactive Mode
 
 ```bash
-oracle-focus-agent run --config config.yaml
+agent-oci-to-umbrella run --config config.yaml
 ```
 
 **Interactive Mode Features:**
@@ -491,7 +491,7 @@ agent:
 Use the `--force` flag to transfer all discovered files, ignoring state tracking:
 
 ```bash
-oracle-focus-agent sync --config config.yaml --force
+agent-oci-to-umbrella sync --config config.yaml --force
 ```
 
 **Force Mode Behavior:**
@@ -508,7 +508,7 @@ agent:
   lookback_days: 10
 
 # Step 2: Force sync
-oracle-focus-agent sync --config config.yaml --force
+agent-oci-to-umbrella sync --config config.yaml --force
 
 # Output:
 Starting sync operation (FORCED - ignoring state)
@@ -555,7 +555,7 @@ agent:
 ### Start as Background Daemon
 
 ```bash
-oracle-focus-agent start --config config.yaml
+agent-oci-to-umbrella start --config config.yaml
 ```
 
 **Output:**
@@ -568,7 +568,7 @@ Daemon started with PID 12345
 ### Check Daemon Status
 
 ```bash
-oracle-focus-agent status
+agent-oci-to-umbrella status
 ```
 
 **Output:**
@@ -580,7 +580,7 @@ Daemon is running with PID 12345
 ### Stop Daemon
 
 ```bash
-oracle-focus-agent stop
+agent-oci-to-umbrella stop
 ```
 
 **Output:**
@@ -681,7 +681,7 @@ logging:
 
 **Solutions:**
 - Files were already transferred (check `state/state.json`)
-- To re-transfer, use `--force` flag: `oracle-focus-agent sync --config config.yaml --force`
+- To re-transfer, use `--force` flag: `agent-oci-to-umbrella sync --config config.yaml --force`
 - Or delete state file to start fresh: `rm state/state.json`
 
 ### Problem: Daemon Won't Start
@@ -689,10 +689,10 @@ logging:
 **Error:** `Error: Daemon already running with PID 12345`
 
 **Solutions:**
-- Check if daemon is actually running: `oracle-focus-agent status`
-- Stop existing daemon: `oracle-focus-agent stop`
-- If stuck, kill process manually: `kill $(cat /tmp/oracle-focus-agent.pid)`
-- Remove stale PID file: `rm /tmp/oracle-focus-agent.pid`
+- Check if daemon is actually running: `agent-oci-to-umbrella status`
+- Stop existing daemon: `agent-oci-to-umbrella stop`
+- If stuck, kill process manually: `kill $(cat /tmp/agent-oci-to-umbrella.pid)`
+- Remove stale PID file: `rm /tmp/agent-oci-to-umbrella.pid`
 
 ### Problem: Transfer Failures
 
@@ -702,7 +702,7 @@ logging:
 - Check logs for specific error messages: `tail -100 logs/agent.log`
 - Verify network connectivity to both OCI and AWS
 - Check file sizes aren't exceeding limits (default: 5 GB)
-- Retry with: `oracle-focus-agent sync --config config.yaml --force`
+- Retry with: `agent-oci-to-umbrella sync --config config.yaml --force`
 - Increase retry settings in `config.yaml`
 
 ### Problem: Slow Transfers
@@ -721,7 +721,7 @@ logging:
 - **Documentation:** Check INSTALLATION_GUIDE.html
 - **Logs:** Review `logs/agent.log` for detailed errors
 - **State:** Inspect `state/state.json` for transfer history
-- **Test Mode:** Run `oracle-focus-agent test --config config.yaml`
+- **Test Mode:** Run `agent-oci-to-umbrella test --config config.yaml`
 - **Verbose Logs:** Set `level: "DEBUG"` in config for more detail
 
 ---
@@ -730,13 +730,13 @@ logging:
 
 | Task | Command |
 |------|---------|
-| Test configuration | `oracle-focus-agent test --config config.yaml` |
-| One-time sync | `oracle-focus-agent sync --config config.yaml` |
-| Force re-transfer all | `oracle-focus-agent sync --config config.yaml --force` |
-| Run interactively | `oracle-focus-agent run --config config.yaml` |
-| Start daemon | `oracle-focus-agent start --config config.yaml` |
-| Check status | `oracle-focus-agent status` |
-| Stop daemon | `oracle-focus-agent stop` |
+| Test configuration | `agent-oci-to-umbrella test --config config.yaml` |
+| One-time sync | `agent-oci-to-umbrella sync --config config.yaml` |
+| Force re-transfer all | `agent-oci-to-umbrella sync --config config.yaml --force` |
+| Run interactively | `agent-oci-to-umbrella run --config config.yaml` |
+| Start daemon | `agent-oci-to-umbrella start --config config.yaml` |
+| Check status | `agent-oci-to-umbrella status` |
+| Stop daemon | `agent-oci-to-umbrella stop` |
 | View logs | `tail -f logs/agent.log` |
 | Check state | `cat state/state.json` |
 
@@ -748,14 +748,14 @@ After automated installation, files are located at:
 
 | Component | Location |
 |-----------|----------|
-| Binary | `/usr/local/bin/oracle-focus-agent` |
-| Configuration | `/etc/oracle-focus-agent/config.yaml` |
+| Binary | `/usr/local/bin/agent-oci-to-umbrella` |
+| Configuration | `/etc/agent-oci-to-umbrella/config.yaml` |
 | OCI Credentials | `/root/.oci/config` |
 | AWS Credentials | `/root/.aws/credentials` |
-| Logs | `/var/log/oracle-focus-agent/agent.log` |
-| State | `/var/lib/oracle-focus-agent/state.json` |
-| Systemd Service | `/etc/systemd/system/oracle-focus-agent.service` |
-| PID File | `/tmp/oracle-focus-agent.pid` |
+| Logs | `/var/log/agent-oci-to-umbrella/agent.log` |
+| State | `/var/lib/agent-oci-to-umbrella/state.json` |
+| Systemd Service | `/etc/systemd/system/agent-oci-to-umbrella.service` |
+| PID File | `/tmp/agent-oci-to-umbrella.pid` |
 
 ---
 
@@ -763,29 +763,29 @@ After automated installation, files are located at:
 
 ```bash
 # Start/Stop/Restart
-sudo systemctl start oracle-focus-agent
-sudo systemctl stop oracle-focus-agent
-sudo systemctl restart oracle-focus-agent
+sudo systemctl start agent-oci-to-umbrella
+sudo systemctl stop agent-oci-to-umbrella
+sudo systemctl restart agent-oci-to-umbrella
 
 # Enable/Disable Auto-Start
-sudo systemctl enable oracle-focus-agent   # Start on boot
-sudo systemctl disable oracle-focus-agent  # Don't start on boot
+sudo systemctl enable agent-oci-to-umbrella   # Start on boot
+sudo systemctl disable agent-oci-to-umbrella  # Don't start on boot
 
 # View Logs
-sudo journalctl -u oracle-focus-agent -f
+sudo journalctl -u agent-oci-to-umbrella -f
 
 # View last 100 lines
-sudo journalctl -u oracle-focus-agent -n 100
+sudo journalctl -u agent-oci-to-umbrella -n 100
 ```
 
 ---
 
-**Installation Complete!** Your Oracle FOCUS to Umbrella BYOD Transfer Agent is ready to use. Start with:
+**Installation Complete!** Your OCI to Umbrella BYOD Transfer Agent is ready to use. Start with:
 
 ```bash
-oracle-focus-agent test --config config.yaml
+agent-oci-to-umbrella test --config config.yaml
 ```
 
 ---
 
-Oracle FOCUS to Umbrella BYOD Transfer Agent v1.0.0 | Last Updated: November 25, 2025
+OCI to Umbrella BYOD Transfer Agent v1.0.0 | Last Updated: November 25, 2025

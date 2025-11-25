@@ -69,7 +69,7 @@ logging:
   level: "INFO"
 
   # Log file path (empty string means log to console only)
-  file: "/var/log/oracle-focus-agent/agent.log"
+  file: "/var/log/agent-oci-to-umbrella/agent.log"
 
   # Maximum log file size in MB (when to rotate)
   max_size_mb: 100
@@ -83,7 +83,7 @@ logging:
 # State Management
 state:
   # Path to state file (tracks processed files to avoid duplicates)
-  file: "/var/lib/oracle-focus-agent/state.json"
+  file: "/var/lib/agent-oci-to-umbrella/state.json"
 
   # How long to keep processed file records in days (0 = forever)
   retention_days: 30
