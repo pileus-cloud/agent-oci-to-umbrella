@@ -1,0 +1,117 @@
+# Oracle FOCUS to Umbrella BYOD Transfer Agent - Configuration Template
+# Copy this file to config.yaml and fill in your values
+
+# Oracle OCI Configuration
+oci:
+  # Path to OCI config file (default: ~/.oci/config)
+  config_file: "~/.oci/config"
+
+  # OCI config profile name (default: DEFAULT)
+  profile: "DEFAULT"
+
+  # Oracle Object Storage namespace (for FOCUS reports, use: bling)
+  namespace: "bling"
+
+  # Bucket name (use your tenancy OCID)
+  # Example: ocid1.tenancy.oc1..aaaaaaaatjusogdqicpfl5vfvl7q474vm2ao7lzffenavtmwkc4p6olszjoq
+  bucket: "<YOUR_TENANCY_OCID>"
+
+  # Prefix for FOCUS reports (default: FOCUS Reports/)
+  prefix: "FOCUS Reports/"
+
+# AWS S3 Configuration
+s3:
+  # Full S3 path including bucket and prefix
+  # Format: s3://bucket-name/org-id/customer-id/account-id
+  # Example: s3://anodot-xxx/47e09447-xxx/0/AccountName
+  bucket_path: "s3://<BUCKET_NAME>/<ORG_ID>/<CUSTOMER_ID>/<ACCOUNT_ID>"
+
+  # AWS region (optional, will use default from AWS config if not specified)
+  region: "us-east-1"
+
+  # AWS credentials (leave empty to use environment variables or ~/.aws/credentials)
+  # It's recommended to use environment variables or AWS credential chain
+  access_key_id: ""
+  secret_access_key: ""
+
+# Agent Operation Settings
+agent:
+  # Polling interval in seconds (default: 600 = 10 minutes)
+  poll_interval: 600
+
+  # Number of days to look back (default: 0 = current day only)
+  # Set to 1 to include yesterday, 2 for last 2 days, etc.
+  lookback_days: 0
+
+  # Maximum concurrent file transfers
+  max_concurrent_transfers: 3
+
+  # Enable daemon mode (true) or run once (false)
+  daemon_mode: true
+
+# Retry Configuration
+retry:
+  # Maximum number of retry attempts for failed transfers
+  max_retries: 3
+
+  # Initial retry delay in seconds
+  initial_delay: 5
+
+  # Backoff multiplier for exponential backoff
+  backoff_multiplier: 2
+
+  # Maximum retry delay in seconds
+  max_delay: 300
+
+# Logging Configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+
+  # Log file path (empty string means log to console only)
+  file: "/var/log/oracle-focus-agent/agent.log"
+
+  # Maximum log file size in MB (when to rotate)
+  max_size_mb: 100
+
+  # Number of backup log files to keep
+  backup_count: 5
+
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# State Management
+state:
+  # Path to state file (tracks processed files to avoid duplicates)
+  file: "/var/lib/oracle-focus-agent/state.json"
+
+  # How long to keep processed file records in days (0 = forever)
+  retention_days: 30
+
+# File Naming
+naming:
+  # Date format for file prefix (default: YYYY-MM-DD)
+  # Uses Python strftime format
+  date_format: "%Y-%m-%d"
+
+  # Separator between date and original filename
+  separator: "_"
+
+  # Example result: 2024-11-28_0001000002103533-00001.csv.gz
+
+# Advanced Settings
+advanced:
+  # Validate file size before transfer (skip files > 5GB)
+  validate_file_size: true
+
+  # Maximum file size in GB
+  max_file_size_gb: 5
+
+  # Stream chunk size in bytes for transfers (default: 8MB)
+  chunk_size_bytes: 8388608
+
+  # Enable checksum validation after transfer
+  validate_checksum: true
+
+  # Dry run mode (discover files but don't transfer)
+  dry_run: false
