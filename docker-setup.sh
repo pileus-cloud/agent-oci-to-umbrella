@@ -73,35 +73,40 @@ else
     echo ""
 fi
 
-# Check credentials
-echo "Checking credentials..."
-CREDS_OK=true
-
-if [ ! -d "$HOME/.oci" ] || [ ! -f "$HOME/.oci/config" ]; then
-    echo -e "${YELLOW}⚠ OCI credentials not found at ~/.oci/config${NC}"
-    CREDS_OK=false
+# Setup environment variables file
+echo "Setting up environment variables..."
+if [ ! -f ".env" ]; then
+    if [ -f ".env.template" ]; then
+        echo "Creating .env file from template..."
+        cp .env.template .env
+        chmod 600 .env
+        echo -e "${GREEN}✓ Created .env file${NC}"
+        echo ""
+        echo -e "${YELLOW}IMPORTANT: Edit .env file with your credentials:${NC}"
+        echo -e "   ${BLUE}nano .env${NC}"
+        echo ""
+        echo "You need to provide:"
+        echo "  1. AWS credentials (access key ID, secret access key)"
+        echo "  2. OCI credentials (user OCID, fingerprint, tenancy OCID, region)"
+        echo "  3. OCI private key (place in config/oci_private_key.pem)"
+        echo ""
+        echo -e "${YELLOW}⚠  Remember to place your OCI private key:${NC}"
+        echo -e "   ${BLUE}cp /path/to/your/oci_key.pem config/oci_private_key.pem${NC}"
+        echo -e "   ${BLUE}chmod 600 config/oci_private_key.pem${NC}"
+        echo ""
+    else
+        echo -e "${RED}Error: .env.template not found${NC}"
+        exit 1
+    fi
 else
-    echo -e "${GREEN}✓ OCI credentials found${NC}"
+    echo -e "${GREEN}✓ .env file already exists${NC}"
+    echo ""
 fi
 
-if [ ! -d "$HOME/.aws" ] || [ ! -f "$HOME/.aws/credentials" ]; then
-    echo -e "${YELLOW}⚠ AWS credentials not found at ~/.aws/credentials${NC}"
-    CREDS_OK=false
-else
-    echo -e "${GREEN}✓ AWS credentials found${NC}"
-fi
-echo ""
-
-if [ "$CREDS_OK" = false ]; then
-    echo -e "${YELLOW}Please set up your credentials before running the agent:${NC}"
-    echo ""
-    echo "OCI credentials:"
-    echo "  mkdir -p ~/.oci"
-    echo "  nano ~/.oci/config"
-    echo ""
-    echo "AWS credentials:"
-    echo "  mkdir -p ~/.aws"
-    echo "  nano ~/.aws/credentials"
+# Check if OCI private key exists
+if [ ! -f "config/oci_private_key.pem" ]; then
+    echo -e "${YELLOW}⚠ OCI private key not found at config/oci_private_key.pem${NC}"
+    echo "  Please copy your OCI private key to this location"
     echo ""
 fi
 

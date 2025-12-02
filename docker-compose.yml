@@ -18,13 +18,11 @@ services:
       - ./logs:/logs
       - ./state:/state
 
-      # OCI credentials (read-only)
-      - ~/.oci:/root/.oci:ro
+    # Load environment variables from .env file (contains secrets)
+    env_file:
+      - .env
 
-      # AWS credentials (read-only)
-      - ~/.aws:/root/.aws:ro
-
-    # Environment variables (optional overrides)
+    # Additional environment variables
     environment:
       - AGENT_CONFIG=/config/config.yaml
 

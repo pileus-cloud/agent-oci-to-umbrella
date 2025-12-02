@@ -347,8 +347,84 @@ The Docker container uses the following volume mounts:
 | `./config` | `/config` | Configuration files | Read-only |
 | `./logs` | `/logs` | Agent logs | Read-write |
 | `./state` | `/state` | State tracking | Read-write |
-| `~/.oci` | `/root/.oci` | OCI credentials | Read-only |
-| `~/.aws` | `/root/.aws` | AWS credentials | Read-only |
+
+**Note:** Credentials are provided via environment variables (`.env` file), not volume mounts. This is more secure and portable across environments.
+
+### Secrets Management
+
+The agent supports **two methods** for managing credentials:
+
+#### Method 1: Environment Variables (Recommended) ⭐
+
+**Portable, works everywhere (AWS, Azure, GCP, on-prem)**
+
+1. Copy the template:
+   ```bash
+   cp .env.template .env
+   chmod 600 .env
+   ```
+
+2. Edit `.env` with your credentials:
+   ```bash
+   nano .env
+   ```
+
+3. Place your OCI private key:
+   ```bash
+   cp /path/to/your/oci_key.pem config/oci_private_key.pem
+   chmod 600 config/oci_private_key.pem
+   ```
+
+4. Run the agent:
+   ```bash
+   docker compose up -d
+   ```
+
+**Pros:**
+- ✅ Works in any environment (not cloud-specific)
+- ✅ Easy to set up and understand
+- ✅ `.env` file excluded from git automatically
+- ✅ No volume mounting of credential directories
+
+**`.env` file contains:**
+```bash
+# AWS Credentials
+AWS_ACCESS_KEY_ID=your-key
+AWS_SECRET_ACCESS_KEY=your-secret
+AWS_DEFAULT_REGION=us-east-1
+
+# OCI Credentials
+OCI_USER_OCID=ocid1.user...
+OCI_FINGERPRINT=aa:bb:cc...
+OCI_TENANCY_OCID=ocid1.tenancy...
+OCI_REGION=us-ashburn-1
+OCI_KEY_FILE=/config/oci_private_key.pem
+```
+
+#### Method 2: Docker Secrets (Advanced)
+
+**For Docker Swarm deployments requiring enhanced security**
+
+1. Create Docker secrets:
+   ```bash
+   echo "AKIA..." | docker secret create aws_access_key_id -
+   echo "secret..." | docker secret create aws_secret_access_key -
+   cat oci_key.pem | docker secret create oci_private_key -
+   # ... (see docker-compose.secrets.yml for full list)
+   ```
+
+2. Deploy with Docker Swarm:
+   ```bash
+   docker stack deploy -c docker-compose.secrets.yml agent-oci-to-umbrella
+   ```
+
+**Pros:**
+- ✅ Secrets encrypted at rest and in transit
+- ✅ Only available to specified services
+- ✅ No plain text files
+- ⚠️ Requires Docker Swarm mode
+
+**For most users, Method 1 (Environment Variables) is recommended.**
 
 ### Docker Best Practices
 
@@ -370,9 +446,11 @@ The container includes a health check that runs every 60 seconds to ensure the a
 
 **Security:**
 
-- Credentials are mounted as read-only volumes
+- Credentials stored in `.env` file (not checked into git)
+- OCI private key stored separately in `config/` directory
 - Container runs as root (needed for OCI/AWS SDKs)
 - No exposed ports (agent doesn't listen on any ports)
+- All credential files have restrictive permissions (600)
 
 ---
 

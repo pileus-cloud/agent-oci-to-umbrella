@@ -38,17 +38,41 @@ class OCIClient:
         self.namespace = config.oci.namespace
         self.bucket = config.oci.bucket
 
-        # Load OCI configuration from file
-        config_file = os.path.expanduser(config.oci.config_file)
-        try:
-            self.oci_config = oci.config.from_file(
-                file_location=config_file,
-                profile_name=config.oci.profile
-            )
-            logger.info(f"Loaded OCI config from {config_file} [{config.oci.profile}]")
-        except Exception as e:
-            logger.error(f"Failed to load OCI config: {e}")
-            raise
+        # Try to load OCI configuration from file first
+        config_file = os.path.expanduser(config.oci.config_file) if config.oci.config_file else None
+
+        if config_file and os.path.exists(config_file):
+            # Load from config file
+            try:
+                self.oci_config = oci.config.from_file(
+                    file_location=config_file,
+                    profile_name=config.oci.profile
+                )
+                logger.info(f"Loaded OCI config from {config_file} [{config.oci.profile}]")
+            except Exception as e:
+                logger.error(f"Failed to load OCI config from file: {e}")
+                raise
+        else:
+            # Fallback to environment variables
+            logger.info("OCI config file not found, using environment variables")
+            try:
+                self.oci_config = {
+                    'user': os.getenv('OCI_USER_OCID'),
+                    'fingerprint': os.getenv('OCI_FINGERPRINT'),
+                    'tenancy': os.getenv('OCI_TENANCY_OCID'),
+                    'region': os.getenv('OCI_REGION'),
+                    'key_file': os.getenv('OCI_KEY_FILE')
+                }
+
+                # Validate that all required env vars are set
+                missing = [k for k, v in self.oci_config.items() if not v]
+                if missing:
+                    raise ValueError(f"Missing OCI environment variables: {', '.join(missing)}")
+
+                logger.info(f"Loaded OCI config from environment variables (region: {self.oci_config['region']})")
+            except Exception as e:
+                logger.error(f"Failed to load OCI config from environment: {e}")
+                raise
 
         # Create Object Storage client
         try:
