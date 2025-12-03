@@ -203,25 +203,23 @@ class TransferOrchestrator:
 
     def _generate_s3_key(self, oci_object_name: str, date_obj: date) -> str:
         """
-        Generate S3 key from OCI object name with hierarchical date structure.
+        Generate S3 key from OCI object name with single-level date directory.
 
         Args:
             oci_object_name: Full OCI object name
-            date_obj: Date for directory structure
+            date_obj: Date for directory name
 
         Returns:
-            S3 key with hierarchical date path (YYYY/MM/DD/filename.csv.gz)
+            S3 key with single-level date directory (YYYY_MM_DD/filename.csv.gz)
         """
         # Extract filename from OCI path
         basename = os.path.basename(oci_object_name)
 
-        # Create hierarchical date structure: YYYY/MM/DD/
-        year = date_obj.strftime("%Y")
-        month = date_obj.strftime("%m")
-        day = date_obj.strftime("%d")
+        # Create single-level date directory: YYYY_MM_DD
+        date_folder = date_obj.strftime("%Y_%m_%d")
 
-        # Return hierarchical S3 key matching OCI structure
-        return f"{year}/{month}/{day}/{basename}"
+        # Return single-level S3 key
+        return f"{date_folder}/{basename}"
 
     def _filter_files(self, files: List[FileInfo], force: bool = False) -> List[FileInfo]:
         """
